@@ -119,37 +119,18 @@ answer_three()
 # *This function should return a tuple of two series
 # `(smallest tf-idfs series, largest tf-idfs series)`.*
 
-# In[79]:
-
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 
-vect = TfidfVectorizer().fit(X_train)
-X_train_vectorized = vect.transform(X_train)
-sorted_tfidf_index = X_train_vectorized.max(0).toarray()[0].argsort()
-#feature_names = np.array(vect.get_feature_names())
-feature_names = vect.get_feature_names()
-doc = 0
-feature_index = X_train_vectorized[doc,:].nonzero()[1]
-tfidf_scores = zip(feature_index, [X_train_vectorized[doc, x] for x in feature_index])
-
-for w, s in [(feature_names[i], s) for (i, s) in tfidf_scores]:
-  print( w, s )
-
-#ans = pd.Series( sorted_tfidf_index[0:20] )
-#ans2 = pd.Series( sorted_tfidf_index[:-21:-1] )
-#print(ans, ans2)
-#print('Smallest tfidf:\n{}\n'.format(feature_names[sorted_tfidf_index[:20]]))
-#print('Largest tfidf: \n{}'.format(feature_names[sorted_tfidf_index[-20:]]))
-
 def answer_four():
-    
-    
-    return #Your answer here
+    vect = TfidfVectorizer().fit(X_train)
+    X_train_vectorized = vect.transform(X_train)
+    tfidf_score = X_train_vectorized.max(0).toarray()[0]
+    feature_names = vect.get_feature_names()
+    data = pd.Series( tfidf_score, index = feature_names )
+    data = data.sort_index(ascending=True).sort_values(kind = 'mergesort')
 
-
-# In[80]:
+    return (data[0:20], data[-20:].sort_index(ascending=True).sort_values(ascending = False, kind = 'mergesort'))
 
 
 answer_four()
