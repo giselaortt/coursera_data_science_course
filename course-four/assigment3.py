@@ -11,9 +11,6 @@
 # 
 # In this assignment you will explore text message data and create models to predict if a message is spam or not. 
 
-# In[72]:
-
-
 import pandas as pd
 import numpy as np
 
@@ -21,10 +18,6 @@ spam_data = pd.read_csv('spam.csv')
 
 spam_data['target'] = np.where(spam_data['target']=='spam',1,0)
 spam_data.head(10)
-
-
-# In[73]:
-
 
 from sklearn.model_selection import train_test_split
 
@@ -38,17 +31,12 @@ X_train, X_test, y_train, y_test = train_test_split(spam_data['text'],
 # 
 # *This function should return a float, the percent value (i.e. $ratio * 100$).*
 
-# In[74]:
-
-
 def answer_one():
     
     t = spam_data['target']
     
     return len(t[ t==1 ])*100/len(spam_data)
 
-
-# In[75]:
 
 
 answer_one()
@@ -61,9 +49,6 @@ answer_one()
 # What is the longest token in the vocabulary?
 # 
 # *This function should return a string.*
-
-# In[76]:
-
 
 from sklearn.feature_extraction.text import CountVectorizer
 import operator
@@ -83,9 +68,6 @@ answer_two()
 # 
 # *This function should return the AUC score as a float.*
 
-# In[77]:
-
-
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import roc_auc_score
 
@@ -98,10 +80,6 @@ def answer_three():
     predictions = model.predict( transformed_test)
     
     return roc_auc_score(y_test, predictions)
-
-
-# In[78]:
-
 
 answer_three()
 
@@ -144,17 +122,18 @@ answer_four()
 # 
 # *This function should return the AUC score as a float.*
 
-# In[81]:
-
+import sklearn
+from sklearn.metrics import roc_auc_score
 
 def answer_five():
-    
-    
-    return #Your answer here
+    vect = TfidfVectorizer(min_df=3).fit(X_train)
+    X_train_vectorized = vect.transform(X_train)
+    model = sklearn.naive_bayes.MultinomialNB(alpha=0.1)
+    model.fit( X_train_vectorized, y_train )
+    X_test_vectorized = vect.transform( X_test )
+    predictions = model.predict(X_test_vectorized)
 
-
-# In[82]:
-
+    return roc_auc_score(y_test, predictions)
 
 answer_five()
 
@@ -165,9 +144,6 @@ answer_five()
 # 
 # *This function should return a tuple (average length not spam, average length spam).*
 
-# In[83]:
-
-
 def answer_six():
     
     t = spam_data['target']
@@ -175,21 +151,11 @@ def answer_six():
     not_spam = spam_data[ t==0 ]
     
     return (not_spam['text'].str.len().mean(), spam['text'].str.len().mean())
-    
-
-
-# In[84]:
-
 
 answer_six()
 
 
-# <br>
-# <br>
 # The following function has been provided to help you combine new features into the training data:
-
-# In[85]:
-
 
 def add_feature(X, feature_to_add):
     """
@@ -208,17 +174,20 @@ def add_feature(X, feature_to_add):
 # 
 # *This function should return the AUC score as a float.*
 
-# In[86]:
-
 
 from sklearn.svm import SVC
 
 def answer_seven():
-    return
+    vect = TfidfVectorizer(min_df=5).fit(X_train)
+    X_train_vectorized = vect.transform(X_train)
+    X_train_vectorized = add_feature(X_train_vectorized, X_train.str.len())
+    model = SVC( C=10000 )
+    model.fit( X_train_vectorized, y_train )
+    X_test_vectorized = vect.transform( X_test )
+    X_test_vectorized = add_feature( X_test_vectorized, X_test.str.len() )
+    predictions = model.predict(X_test_vectorized)
 
-
-# In[87]:
-
+    return roc_auc_score(y_test, predictions)
 
 answer_seven()
 
@@ -228,8 +197,6 @@ answer_seven()
 # What is the average number of digits per document for not spam and spam documents?
 # 
 # *This function should return a tuple (average # digits not spam, average # digits spam).*
-
-# In[96]:
 
 
 def answer_eight():
@@ -241,9 +208,6 @@ def answer_eight():
     avg_non_character_non_spam = not_spam.str.count('\d').mean()
     
     return (avg_non_character_non_spam, avg_non_character_spam)
-
-
-# In[97]:
 
 
 answer_eight()
@@ -261,16 +225,11 @@ answer_eight()
 # 
 # *This function should return the AUC score as a float.*
 
-# In[90]:
-
 
 from sklearn.linear_model import LogisticRegression
 
 def answer_nine():
     return
-
-
-# In[91]:
 
 
 answer_nine()
@@ -284,9 +243,6 @@ answer_nine()
 # 
 # *This function should return a tuple (average # non-word characters not spam, average # non-word characters spam).*
 
-# In[92]:
-
-
 def answer_ten():
     
     t = spam_data['target']
@@ -296,9 +252,6 @@ def answer_ten():
     avg_non_character_non_spam = not_spam.str.count('\W').mean()
     
     return (avg_non_character_non_spam, avg_non_character_spam)
-
-
-# In[93]:
 
 
 answer_ten()
@@ -326,17 +279,10 @@ answer_ten()
 # 
 # *This function should return a tuple `(AUC score as a float, smallest coefs list, largest coefs list)`.*
 
-# In[94]:
-
-
 from sklearn.linear_model import LogisticRegression
 
 def answer_eleven():
     return
-
-
-# In[95]:
-
 
 answer_eleven()
 
